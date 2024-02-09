@@ -1,0 +1,33 @@
+using UnityEditor;
+using UnityEditor.PackageManager.UI;
+using UnityEngine;
+using static UnityEngine.Rendering.DebugUI.Table;
+
+namespace Assets.IslandMonkey.Scripts.Debug
+{
+#if UNITY_EDITOR
+    public class DebugSphereDrawer : MonoBehaviour
+    {
+
+        [SerializeField] private Color _color = Color.red;
+        [SerializeField] public float size = 1.0f;
+        [SerializeField] private bool _wireFrame = false;
+        // Update is called once per frame
+
+        void OnDrawGizmos()
+        {
+            Gizmos.color = _color;
+            if (_wireFrame)
+            {
+                Gizmos.DrawWireSphere(transform.position, size);
+            }
+            else
+            {
+                Gizmos.DrawSphere(transform.position, size);
+            }
+            
+        }
+    }
+#endif
+}
+
