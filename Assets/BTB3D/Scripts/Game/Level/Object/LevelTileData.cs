@@ -3,8 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New LevelTileData",menuName = "Level/Level Tile Data")]
-public class LevelTileData : ScriptableObject
+[Serializable]
+public class LevelTileData
 {
     [Serializable]
     public class BoolList
@@ -31,7 +31,7 @@ public class LevelTileData : ScriptableObject
     public bool[,] ToArray()
     {
         bool[,] result=new bool[value.Length,value[0].value.Length];
-        for (int i = 0; i < result.Length; i++)
+        for (int i = 0; i < value.Length; i++)
         {
             for (int j = 0; j < value[i].value.Length; j++)
             {
@@ -41,11 +41,11 @@ public class LevelTileData : ScriptableObject
         return result;
     }
 
-    public void FromArray(bool[,] array)
+    public void FromArray(bool[,] array,int row, int column)
     {
-        for (int i = 0; i < 100; i++)
+        for (int i = 0; i < row; i++)
         {
-            for (int j = 0; j < 100; j++)
+            for (int j = 0; j < column; j++)
             { 
                 value[i].value[j]= array[i,j];
             }

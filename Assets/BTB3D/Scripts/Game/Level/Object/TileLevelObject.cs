@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using BTB3D.Scripts.Data;
+using BTB3D.Scripts.Game.Data;
 using BTB3D.Scripts.Interface;
 using UnityEditor;
 using UnityEngine;
@@ -18,50 +19,47 @@ namespace BTB3D.Scripts.Game.Level.Object
 
             TileLevelObject obj = (TileLevelObject)target;
 
-            if (obj.data)
-            {
-                var tileData = obj.data;
-                GUILayout.Label("Tiles", EditorStyles.whiteLargeLabel);
-                EditorGUILayout.BeginVertical();
-                _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
 
-                for (int i = 0; i < obj.row; i++)
+            var tileData = obj.data;
+            GUILayout.Label("Tiles", EditorStyles.whiteLargeLabel);
+            EditorGUILayout.BeginVertical();
+            _scrollPosition = EditorGUILayout.BeginScrollView(_scrollPosition);
+            for (int i = 0; i < obj.row; i++)
+            {
+                EditorGUILayout.BeginHorizontal();
+                for (int j = 0; j < obj.column; j++)
                 {
-                    EditorGUILayout.BeginHorizontal();
-                    for (int j = 0; j < obj.column; j++)
+                    if (tileData.Get(i, j))
                     {
-                        if (tileData.Get(i,j))
+                        GUI.backgroundColor = Color.green;
+                    }
+                    else
+                    {
+                        GUI.backgroundColor = Color.gray;
+                    }
+
+                    if (GUILayout.Button("", EditorStyles.helpBox, GUILayout.Width(50), GUILayout.Height(50)))
+                    {
+
+                        if (tileData.Get(i, j))
                         {
-                            GUI.backgroundColor = Color.green;
+                            obj.data.Set(i, j, false);
                         }
                         else
                         {
-                            GUI.backgroundColor = Color.gray;
-                        }
-
-                        if (GUILayout.Button("", EditorStyles.helpBox, GUILayout.Width(50), GUILayout.Height(50)))
-                        {
-
-                            if (tileData.Get(i, j))
-                            {
-                                obj.data.Set(i, j, false);
-                            }
-                            else
-                            {
-                                obj.data.Set(i,j,true);
-                            }
+                            obj.data.Set(i, j, true);
                         }
                     }
-
-                    EditorGUILayout.EndHorizontal();
                 }
 
-                EditorGUILayout.EndScrollView();
-                EditorGUILayout.EndVertical();
-                if (GUI.changed)
-                {
-                    obj.GenerateTile(obj.modelPrefab);
-                }
+                EditorGUILayout.EndHorizontal();
+            }
+
+            EditorGUILayout.EndScrollView();
+            EditorGUILayout.EndVertical();
+            if (GUI.changed)
+            {
+                obj.GenerateTile(obj.modelPrefab);
             }
         }
     }
@@ -86,7 +84,7 @@ namespace BTB3D.Scripts.Game.Level.Object
         public void GenerateTile(GameObject modelPrefab)
         {
             prefab = GlobalLevelSetting.instance.defaultTilePrefab;
-            
+
             var allChildren = transform.GetComponentsInChildren<StaticLevelObject>();
             foreach (var child in allChildren)
             {
@@ -130,7 +128,7 @@ namespace BTB3D.Scripts.Game.Level.Object
             asset.AddData(parent, IntegerData.Create("row", row));
             asset.AddData(parent, IntegerData.Create("column", column));
             asset.AddData(parent, FloatData.Create("offset", offset));
-            asset.AddData(parent, AssetData.Create("data", data));
+            asset.AddData(parent, Bool2DArrayData.Create("data", data.ToArray(), row, column));
             return asset;
         }
 
@@ -141,12 +139,13 @@ namespace BTB3D.Scripts.Game.Level.Object
             transform.eulerAngles = asset.eulerAngles;
             transform.localScale = asset.scale;
 
-            modelPrefab=asset.modelPrefab;
+            modelPrefab = asset.modelPrefab;
 
-             row = (int)asset.GetValue("row");
+            row = (int)asset.GetValue("row");
             column = (int)asset.GetValue("column");
             offset = (float)asset.GetValue("offset");
-            data= (LevelTileData) asset.GetValue("data");
+            Bool2DArrayData tmp = asset.GetData("data") as Bool2DArrayData;
+            data.FromArray(tmp.GetDataToArray(),row,column);
 
             GenerateTile(modelPrefab);
         }

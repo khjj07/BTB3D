@@ -1,3 +1,4 @@
+using BTB3D.Scripts.Game.ETC;
 using BTB3D.Scripts.Game.Level.Object;
 
 namespace BTB3D.Scripts.Game

@@ -43,7 +43,11 @@ namespace BTB3D.Scripts.Game.Player
                 .Subscribe(x =>
                 {
                     _player.SetAnimationState(Player.AnimationState.Landing);
+                    Observable.Timer(TimeSpan.FromSeconds(0.3f))
+                        .Subscribe(_ => _player.SetAnimationState(Player.AnimationState.Idle));
                 }).AddTo(gameObject);
+
+
             groundStream.Where(_ => _player.GetAnimationState() != Player.AnimationState.Landing && Input.GetAxis("Vertical") == 0 && Input.GetAxis("Horizontal") == 0)
                 .Subscribe(x =>
                 {

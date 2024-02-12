@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using BTB3D.Scripts.Interface;
 using UnityEditor;
 using UnityEngine;
+using SerializedObject = BTB3D.Scripts.Game.ETC.SerializedObject;
 
 namespace BTB3D.Scripts.Game.Level.Object
 {

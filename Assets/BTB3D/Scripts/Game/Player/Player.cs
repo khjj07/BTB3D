@@ -127,7 +127,7 @@ namespace BTB3D.Scripts.Game.Player
             _rotationY += direction * sensitiveX;
             if (_isGround)
             {
-                if (direction > 0)
+                if (direction > 0 && (currentAnimationState != AnimationState.Falling || currentAnimationState != AnimationState.Landing) )
                 {
                     SetAnimationState(AnimationState.TurnRight);
                 }
@@ -154,7 +154,7 @@ namespace BTB3D.Scripts.Game.Player
             _rigidbody.AddForce(transform.right * direction * walkSpeed * Time.deltaTime, ForceMode.VelocityChange);
             if (_isGround)
             {
-                if (direction > 0)
+                if (direction > 0 && (currentAnimationState != AnimationState.Falling || currentAnimationState != AnimationState.Landing))
                 {
                     SetAnimationState(AnimationState.WalkRight);
                 }
@@ -170,7 +170,7 @@ namespace BTB3D.Scripts.Game.Player
             _rigidbody.AddForce(transform.forward * direction * walkSpeed * Time.deltaTime, ForceMode.VelocityChange);
             if (_isGround)
             {
-                if (direction > 0)
+                if (direction > 0 && (currentAnimationState != AnimationState.Falling || currentAnimationState != AnimationState.Landing))
                 {
                     SetAnimationState(AnimationState.WalkForward);
                 }

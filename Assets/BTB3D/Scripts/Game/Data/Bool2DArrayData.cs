@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using UnityEditor;
 
-namespace BTB3D.Scripts.Data
+namespace BTB3D.Scripts.Game.Data
 {
     [Serializable]
-    public class Bool2DArrayData : Data
+    public class Bool2DArrayData : Scripts.Data.Data
     {
         [Serializable]
         public class BoolList
@@ -31,7 +31,7 @@ namespace BTB3D.Scripts.Data
             return result;
         }
 
-        public static Data Create(string name, bool[,] value, int row, int column)
+        public static Scripts.Data.Data Create(string name, bool[,] value, int row, int column)
         {
             var instance = CreateInstance<Bool2DArrayData>();
             EditorUtility.SetDirty(instance);
