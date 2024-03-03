@@ -48,6 +48,15 @@ namespace BTB3D.Scripts.Game.Player
         public float moveDirectionZ;
         public float rotationDirectionX;
         public float rotationDirectionY;
+        public float jumpRecord;
+        public void Act(Action action)
+        {
+            if (action == Action.Jump)
+            {
+                Jump(1);
+            }
+            currentAction = action;
+        }
 
         public void SetAction(Action action)
         {

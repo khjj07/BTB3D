@@ -46,12 +46,13 @@ namespace BTB3D.Scripts.Game.Player
             _moveZList.Clear();
             _rotationXList.Clear();
             _rotationYList.Clear();
-            
+
             _actions =new List<Player.Action>();
             _moveXList = new List<float>();
             _moveZList = new List<float>();
             _rotationXList = new List<float>();
             _rotationYList = new List<float>();
+            
         }
 
         public void RecordStop()

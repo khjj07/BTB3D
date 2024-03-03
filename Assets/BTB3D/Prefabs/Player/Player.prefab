@@ -101,12 +101,19 @@ MonoBehaviour:
   walkSpeed: 20
   jumpForce: 0.7
   groundCheckRayDistance: 0.5
-  sensitiveX: 4
-  sensitiveY: 4
+  sensitiveX: 5
+  sensitiveY: 5
   maxRotationX: 50
   minRotationX: -80
   head: {fileID: 1823406446836685801}
-  currentAnimationState: 0
+  currentAction: 0
+  isGround: 0
+  rotationX: 0
+  rotationY: 0
+  moveDirectionX: 0
+  moveDirectionZ: 0
+  rotationDirectionX: 0
+  rotationDirectionY: 0
 --- !u!1 &5625304662986418171
 GameObject:
   m_ObjectHideFlags: 0

@@ -28,7 +28,7 @@ namespace BTB3D.Scripts.Game.Player
                 _player.MoveZ(moveDirectionZArray[index]);
                 _player.RotateCameraX(rotationDirectionXArray[index]);
                 _player.RotateY(rotationDirectionYArray[index]);
-                _player.SetAction(actions[index]);
+                _player.Act(actions[index]);
                 Debug.Log(moveDirectionZArray[index]);
                 index++;
             }).AddTo(gameObject);

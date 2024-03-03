@@ -118,10 +118,10 @@ namespace BTB3D.Scripts.Game.Player
             GlobalInputBinder.CreateGetAxisStream("Mouse Y").Subscribe(_player.RotateCameraX).AddTo(gameObject);
 
 
-            var horizontalMovementStream = GlobalInputBinder.CreateGetAxisStream("Horizontal");
+            var horizontalMovementStream = GlobalInputBinder.CreateGetAxisStreamOptimize("Horizontal");
             horizontalMovementStream.Subscribe(_player.MoveX).AddTo(gameObject);
 
-            var verticalMovementStream = GlobalInputBinder.CreateGetAxisStream("Vertical");
+            var verticalMovementStream = GlobalInputBinder.CreateGetAxisStreamOptimize("Vertical");
             verticalMovementStream.Subscribe(_player.MoveZ).AddTo(gameObject);
 
 
