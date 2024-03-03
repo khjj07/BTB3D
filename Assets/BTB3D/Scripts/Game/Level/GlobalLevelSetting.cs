@@ -1,5 +1,5 @@
-using Assets.InfinitySword.Scripts.Pattern;
 using BTB3D.Scripts.Game.Level.Object;
+using BTB3D.Scripts.Util;
 using UnityEngine;
 
 namespace BTB3D.Scripts.Game.Level

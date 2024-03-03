@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
-using Assets.InfinitySword.Scripts.Pattern;
 using BTB3D.Scripts.Game.Level.Object;
+using BTB3D.Scripts.Util;
 using UnityEditor;
 using UnityEngine;
 using Serialization = Unity.VisualScripting.Serialization;
@@ -123,7 +123,10 @@ namespace BTB3D.Scripts.Game.Level
                 {
                     levelasset.destination = MapTool.instance.destination.Serialize(levelasset);
                 }
-                
+                if (MapTool.instance.timer)
+                {
+                    levelasset.timer = MapTool.instance.timer.Serialize(levelasset);
+                }
 
                 foreach (var levelObject in allChildren)
                 {
@@ -155,7 +158,14 @@ namespace BTB3D.Scripts.Game.Level
                     }
                 }
                 MapTool.instance.spawnPoint.Deserialize(targetLevelAsset.spawnPoint);
-                MapTool.instance.destination.Deserialize(targetLevelAsset.destination);
+                if (MapTool.instance.destination)
+                {
+                    MapTool.instance.destination.Deserialize(targetLevelAsset.destination);
+                }
+                if (MapTool.instance.timer)
+                {
+                    MapTool.instance.timer.Deserialize(targetLevelAsset.timer);
+                }
                 List<LevelObject> instances = new List<LevelObject>();
                 foreach (var levelObjectAsset in targetLevelAsset.objects)
                 {
@@ -216,36 +226,9 @@ namespace BTB3D.Scripts.Game.Level
         public string modelsFolderPath;
         public SpawnPoint spawnPoint;
         public Destination destination;
+        public Timer timer;
         public Transform origin;
         // Start is called before the first frame update
         // Update is called once per frame
-        void OnDrawGizmos()
-        {
-            if (spawnPoint!=null)
-            {
-                Gizmos.color = Color.green;
-                Gizmos.DrawMesh(GlobalLevelSetting.instance.playerMesh, spawnPoint.transform.position, Quaternion.identity, Vector3.one * 100);
-                GUIStyle spawnStyle = new GUIStyle();
-                spawnStyle.fontSize = 20;
-                spawnStyle.alignment = TextAnchor.MiddleCenter;
-                spawnStyle.normal.textColor = Color.green;
-                Handles.Label(spawnPoint.transform.position + Vector3.up * 2.5f, "Spawn Point", spawnStyle);
-
-            }
-
-            if (destination != null)
-            {
-                Gizmos.color = new Vector4(1, 0.5f, 0, 0.5f);
-                Gizmos.DrawCube(destination.transform.position, destination.boxCollider.size);
-                GUIStyle destinationStyle = new GUIStyle();
-                destinationStyle.fontSize = 20;
-                destinationStyle.alignment = TextAnchor.MiddleCenter;
-                destinationStyle.normal.textColor = new Vector4(1, 0.5f, 0, 1);
-                Handles.Label(destination.transform.position + Vector3.up * (destination.boxCollider.size.y), "Destination", destinationStyle);
-
-            }
-
-
-        }
     }
 }

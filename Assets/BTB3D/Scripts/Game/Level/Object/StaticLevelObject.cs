@@ -24,9 +24,7 @@ namespace BTB3D.Scripts.Game.Level.Object
             transform.position=asset.position;
             transform.eulerAngles=asset.eulerAngles;
             transform.localScale=asset.scale;
-
-            modelPrefab = asset.modelPrefab;
-            Initialize(modelPrefab);
+            Initialize(asset.modelPrefab);
         }
 
         public override void Initialize(GameObject modelPrefab)
@@ -37,6 +35,7 @@ namespace BTB3D.Scripts.Game.Level.Object
             {
                 var instance = Instantiate(child, transform);
                 var col = instance.AddComponent<MeshCollider>();
+                //col.convex = true;
                 col.sharedMesh = instance.sharedMesh;
             }
         }

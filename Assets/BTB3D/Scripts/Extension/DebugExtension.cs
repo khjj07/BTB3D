@@ -8,14 +8,14 @@ namespace DebugExtentionMethods
     public static class DebugExtension
     {
         //Draws just the box at where it is currently hitting.
-        public static void DrawBoxCastOnHit(this Debug debug,Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 direction, float hitInfoDistance, Color color)
+        public static void DrawBoxCastOnHit(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 direction, float hitInfoDistance, Color color)
         {
             origin = CastCenterOnCollision(origin, direction, hitInfoDistance);
-            DrawBox(debug,origin, halfExtents, orientation, color);
+            DrawBox(origin, halfExtents, orientation, color);
         }
 
         //Draws the full box from start of cast to its end distance. Can also pass in hitInfoDistance instead of full distance
-        public static void DrawBoxCastBox(this Debug debug, Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 direction, float distance, Color color)
+        public static void DrawBoxCastBox( Vector3 origin, Vector3 halfExtents, Quaternion orientation, Vector3 direction, float distance, Color color)
         {
             direction.Normalize();
             Box bottomBox = new Box(origin, halfExtents, orientation);
@@ -34,7 +34,7 @@ namespace DebugExtentionMethods
             DrawBox(topBox, color);
         }
 
-        public static void DrawBox(this Debug debug, Vector3 origin, Vector3 halfExtents, Quaternion orientation, Color color)
+        public static void DrawBox(Vector3 origin, Vector3 halfExtents, Quaternion orientation, Color color)
         {
             DrawBox(new Box(origin, halfExtents, orientation), color);
         }

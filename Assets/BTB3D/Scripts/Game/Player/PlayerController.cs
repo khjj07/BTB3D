@@ -1,7 +1,9 @@
 using System;
 using BTB3D.Scripts.Game.Level.Object;
+using BTB3D.Scripts.Game.Manager;
 using BTB3D.Scripts.Interface;
 using BTB3D.Scripts.Util;
+using DebugExtentionMethods;
 using JetBrains.Annotations;
 using UniRx;
 using UniRx.Triggers;
@@ -19,46 +21,50 @@ namespace BTB3D.Scripts.Game.Player
         [Header("Camera Option")]
    
         [SerializeField] private Transform cameraHead;
+        [SerializeField] private Transform neck;
 
         [CanBeNull] private IInteractable _lookTarget = null;
 
         private Camera _camera;
         private Game.Player.Player _player;
 
+        private void Awake()
+        {
+            _camera = cameraHead.GetComponentInChildren<Camera>();
+            _player = GetComponent<Game.Player.Player>();
+        }
 
         private void Start()
         {
-            _camera = cameraHead.GetComponentInChildren<Camera>();
-            _player = GetComponentInChildren<Game.Player.Player>();
            // cameraHead.transform.position = _player.head.transform.position;
             SetCursorOption();
             CreateInteractStream();
             CreateInputStream();
             var groundStream = this.UpdateAsObservable()
-                .Where(_ => _player.IsGround());
+                .Where(_ => _player.isGround);
             var notGroundStream = this.UpdateAsObservable()
-                .Where(_ => !_player.IsGround());
+                .Where(_ => !_player.isGround);
 
-            groundStream.Where(_ => _player.GetAnimationState() == Player.AnimationState.Falling)
+            groundStream.Where(_ => _player.GetAction() == Player.Action.Falling)
                 .Subscribe(x =>
                 {
-                    _player.SetAnimationState(Player.AnimationState.Landing);
+                    _player.SetAction(Player.Action.Landing);
                     Observable.Timer(TimeSpan.FromSeconds(0.3f))
-                        .Subscribe(_ => _player.SetAnimationState(Player.AnimationState.Idle));
+                        .Subscribe(_ => _player.SetAction(Player.Action.Idle));
                 }).AddTo(gameObject);
 
 
-            groundStream.Where(_ => _player.GetAnimationState() != Player.AnimationState.Landing && Input.GetAxis("Vertical") == 0 && Input.GetAxis("Horizontal") == 0)
+            groundStream.Where(_ => _player.GetAction() != Player.Action.Landing && Input.GetAxis("Vertical") == 0 && Input.GetAxis("Horizontal") == 0)
                 .Subscribe(x =>
                 {
-                    _player.SetAnimationState(Player.AnimationState.Idle);
+                    _player.SetAction(Player.Action.Idle);
                 }).AddTo(gameObject);
 
             notGroundStream.Subscribe(x =>
             {
-                if (_player.GetAnimationState() != Player.AnimationState.Landing)
+                if (_player.GetAction() != Player.Action.Landing)
                 {
-                    _player.SetAnimationState(Player.AnimationState.Falling);
+                    _player.SetAction(Player.Action.Falling);
                 }
             }).AddTo(gameObject);
         }
@@ -71,15 +77,26 @@ namespace BTB3D.Scripts.Game.Player
                     Ray ray = _camera.ScreenPointToRay(center);
                     RaycastHit hit;
 #if UNITY_EDITOR
-                    Debug.DrawLine(ray.origin, ray.origin + ray.direction * interactRayDistance, Color.red);
+                    DebugExtension.DrawBoxCastBox(ray.origin, Vector3.one * 0.3f, Quaternion.LookRotation(ray.direction,cameraHead.transform.up), ray.direction, interactRayDistance,Color.red);
 #endif
-                    var isContact = Physics.Raycast(ray.origin, ray.direction, out hit, interactRayDistance);
+                    var isContact = Physics.BoxCast(ray.origin,Vector3.one*0.3f, ray.direction, out hit, Quaternion.LookRotation(ray.direction, cameraHead.transform.up), interactRayDistance);
                     if (isContact)
                     {
-                        return hit.collider.GetComponent<LevelObject>() as IInteractable;
+                        var interactionTarget = hit.collider.GetComponentInParent<LevelObject>() as IInteractable;
+                        if (interactionTarget!=null)
+                        {
+                            GlobalEventManager.instance.ShowInteractionUI(_camera, hit.collider.bounds.center);
+                            return interactionTarget;
+                        }
+                        else
+                        {
+                            GlobalEventManager.instance.HideInteractionUI();
+                            return null;
+                        }
                     }
                     else
                     {
+                        GlobalEventManager.instance.HideInteractionUI();
                         return null;
                     }
                 }).Where(x => x != null)
@@ -88,24 +105,28 @@ namespace BTB3D.Scripts.Game.Player
                     Debug.Log("target");
                     _lookTarget = x;
                 }).AddTo(gameObject);
+        }
 
+        public void SetPlayerPosition(Vector3 pos)
+        {
+            _player.transform.position = pos;
         }
 
         private void CreateInputStream()
         {
-            GlobalInputBinder.CreateGetAxisStreamOptimize("Mouse X").Subscribe(_player.RotateY).AddTo(gameObject);
-            GlobalInputBinder.CreateGetAxisStreamOptimize("Mouse Y").Subscribe(_player.RotateCameraX).AddTo(gameObject);
+            GlobalInputBinder.CreateGetAxisStream("Mouse X").Subscribe(_player.RotateY).AddTo(gameObject);
+            GlobalInputBinder.CreateGetAxisStream("Mouse Y").Subscribe(_player.RotateCameraX).AddTo(gameObject);
 
 
-            var horizontalMovementStream = GlobalInputBinder.CreateGetAxisStreamOptimize("Horizontal");
+            var horizontalMovementStream = GlobalInputBinder.CreateGetAxisStream("Horizontal");
             horizontalMovementStream.Subscribe(_player.MoveX).AddTo(gameObject);
 
-            var verticalMovementStream = GlobalInputBinder.CreateGetAxisStreamOptimize("Vertical");
+            var verticalMovementStream = GlobalInputBinder.CreateGetAxisStream("Vertical");
             verticalMovementStream.Subscribe(_player.MoveZ).AddTo(gameObject);
 
 
             GlobalInputBinder.CreateGetAxisStreamOptimize("Jump")
-                .Where(_ => _player.IsGround())
+                .Where(_ => _player.isGround)
                 .Subscribe(_player.Jump).AddTo(gameObject);
 
 
@@ -116,16 +137,16 @@ namespace BTB3D.Scripts.Game.Player
 
             this.UpdateAsObservable().Subscribe(_ =>
             {
-                cameraHead.transform.localRotation = Quaternion.Euler(_player.GetRotationX()+10.0f, 0, 0);
-                _camera.transform.localPosition = new Vector3(0, 0.0015f+_player.GetRotationX()*-0.00002f, 0.004f+_player.GetRotationX()*0.00007f);
-            });
+                cameraHead.transform.localRotation = Quaternion.Euler(_player.rotationX+10.0f, 0, 0);
+                cameraHead.transform.transform.position = neck.position;
+                //_camera.transform.localPosition = new Vector3(0, 0.004f+_player.GetRotationX()*-0.02f, 0.3f+_player.GetRotationX()*0.008f);
+            }).AddTo(gameObject);
         }
 
         private void Interact(IInteractable target)
         {
             target.OnInteract();
         }
-
 
         private void SetCursorOption()
         {

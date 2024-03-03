@@ -1,9 +1,10 @@
+using BTB3D.Scripts.Interface;
 using Unity.VisualScripting;
 using UnityEngine;
 
 namespace BTB3D.Scripts.Game.Level.Object
 {
-    public class DynamicLevelObject : LevelObject
+    public class DynamicLevelObject : LevelObject, IDynamic
     {
         public override LevelObjectAsset Serialize(LevelAsset parent)
         {
@@ -22,15 +23,7 @@ namespace BTB3D.Scripts.Game.Level.Object
             transform.position = asset.position;
             transform.eulerAngles = asset.eulerAngles;
             transform.localScale = asset.scale;
-
-            this.modelPrefab = asset.modelPrefab;
-            var allChildren = modelPrefab.GetComponentsInChildren<MeshFilter>();
-            foreach (var child in allChildren)
-            {
-                var instance = Instantiate(child, transform);
-                var col = instance.AddComponent<MeshCollider>();
-                col.sharedMesh = instance.sharedMesh;
-            }
+            Initialize(asset.modelPrefab);
         }
 
         public override void Initialize(GameObject modelPrefab)
@@ -41,6 +34,7 @@ namespace BTB3D.Scripts.Game.Level.Object
             {
                 var instance = Instantiate(child, transform);
                 var col = instance.AddComponent<MeshCollider>();
+                //col.convex = true;
                 col.sharedMesh = child.sharedMesh;
             }
         }

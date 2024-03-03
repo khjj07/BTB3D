@@ -6,6 +6,15 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/BTB3D/Scenes/TestScene.unity
-    guid: 99c9720ab356a0642a771bea13969a05
+    path: Assets/BTB3D/Scenes/Game/Splash.unity
+    guid: 21ac351876bf1004798153b1b175ac0c
+  - enabled: 1
+    path: Assets/BTB3D/Scenes/Game/Title.unity
+    guid: 85dd19985ccca014e87bc01dfb972a81
+  - enabled: 1
+    path: Assets/BTB3D/Scenes/Game/Lobby.unity
+    guid: 6f14b1e395ff912469b5daf5a0bc60f5
+  - enabled: 1
+    path: Assets/BTB3D/Scenes/Game/Level.unity
+    guid: aebc6c913860f614a9a78a18fdd5d6ef
   m_configObjects: {}

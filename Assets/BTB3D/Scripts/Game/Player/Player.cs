@@ -1,3 +1,4 @@
+using BTB3D.Scripts.Interface;
 using System;
 using UniRx;
 using UniRx.Triggers;
@@ -6,9 +7,9 @@ using UnityEngine.Serialization;
 
 namespace BTB3D.Scripts.Game.Player
 {
-    public class Player : MonoBehaviour
+    public class Player : MonoBehaviour, IDynamic
     {
-        public enum AnimationState
+        public enum Action
         {
             Idle,
             WalkForward,
@@ -37,80 +38,132 @@ namespace BTB3D.Scripts.Game.Player
         private Animator _animator;
         private Rigidbody _rigidbody;
 
-        public AnimationState currentAnimationState = AnimationState.Idle;
-        private Vector3 _velocity;
 
-        private bool _isGround;
+        public Action currentAction = Action.Idle;
+        public bool isGround;
+        public float rotationX;
+        public float rotationY;
 
-        private float _rotationX;
-        private float _rotationY;
+        public float moveDirectionX;
+        public float moveDirectionZ;
+        public float rotationDirectionX;
+        public float rotationDirectionY;
 
-
-        public bool IsGround()
+        public void SetAction(Action action)
         {
-            return _isGround;
+            currentAction = action;
         }
 
-        public Vector3 GetVelocity()
+        public Action GetAction()
         {
-            return _velocity;
+            return currentAction;
         }
 
-        public void SetAnimationState(AnimationState state)
+        public void RotateY(float direction)
         {
-            currentAnimationState = state;
+            rotationDirectionY = direction;
+            rotationY += direction * sensitiveX;
+            if (isGround)
+            {
+                if (direction > 0.2f && (currentAction != Action.Falling || currentAction != Action.Landing))
+                {
+                    SetAction(Action.TurnRight);
+                }
+                else if (direction < -0.2f && (currentAction != Action.Falling || currentAction != Action.Landing))
+                {
+                    SetAction(Action.TurnLeft);
+                }
+            }
         }
 
-        public AnimationState GetAnimationState()
+        public void RotateCameraX(float direction)
         {
-            return currentAnimationState;
+            rotationDirectionX = direction;
+            rotationX -= direction * sensitiveY;
+            rotationX = Mathf.Clamp(rotationX, minRotationX, maxRotationX);
+        }
+
+        public void MoveX(float direction)
+        {
+            moveDirectionX = direction;
+            _rigidbody.AddForce(transform.right * direction * walkSpeed * Time.fixedDeltaTime, ForceMode.VelocityChange);
+            if (isGround)
+            {
+                if (direction > 0 && (currentAction != Action.Falling || currentAction != Action.Landing))
+                {
+                    SetAction(Action.WalkRight);
+                }
+                else
+                {
+                    SetAction(Action.WalkLeft);
+                }
+            }
+        }
+
+        public void MoveZ(float direction)
+        {
+            moveDirectionZ = direction;
+            _rigidbody.AddForce(transform.forward * direction * walkSpeed * Time.fixedDeltaTime, ForceMode.VelocityChange);
+            if (isGround)
+            {
+                if (direction > 0 && (currentAction != Action.Falling || currentAction != Action.Landing))
+                {
+                    SetAction(Action.WalkForward);
+                }
+                else
+                {
+                    SetAction(Action.WalkBackward);
+                }
+            }
         }
 
         public void Jump(float value)
         {
             _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
-            if (_isGround)
+            if (isGround)
             {
-                SetAnimationState(AnimationState.Jump);
+                SetAction(Action.Jump);
             }
         }
 
-
         private void Animate()
         {
-            _animator.SetInteger("State", (int)currentAnimationState);
+            _animator.SetInteger("State", (int)currentAction);
         }
 
-        private void CreateHeadMovementStream()
+        public void CreateHeadMovementStream()
         {
             head.UpdateAsObservable().Subscribe(_ =>
             {
-                head.transform.localRotation = Quaternion.Euler(_rotationX, 0, 0);
-                transform.localRotation = Quaternion.Euler(0, _rotationY, 0);
+                head.transform.localRotation = Quaternion.Euler(rotationX, 0, 0);
+                transform.localRotation = Quaternion.Euler(0, rotationY, 0);
             }).AddTo(gameObject);
+        }
+
+        public void CreateCheckGroundStream()
+        {
+            var checkGroundStream = this.UpdateAsObservable()
+                .Select(_ => Physics.Raycast(transform.position + Vector3.up * (groundCheckRayDistance / 2), Vector3.down, groundCheckRayDistance));
+
+            var isGroundStream = checkGroundStream.Where(x => x);
+            checkGroundStream.Subscribe(x => { isGround = x; })
+                .AddTo(gameObject);
         }
 
         private void Start()
         {
             _animator = GetComponentInChildren<Animator>();
             _rigidbody = GetComponent<Rigidbody>();
-
-            var checkGroundStream = this.UpdateAsObservable()
-                .Select(_ => Physics.Raycast(transform.position + Vector3.up * (groundCheckRayDistance / 2), Vector3.down, groundCheckRayDistance));
-
-            var isGroundStream = checkGroundStream.Where(x => x);
-            checkGroundStream.Subscribe(x => { _isGround = x; });
-
             CreateHeadMovementStream();
+            CreateCheckGroundStream();
         }
 
         private void Update()
         {
-            _velocity = _rigidbody.velocity;
             Animate();
 
 #if UNITY_EDITOR
-            if (_isGround)
+            if (isGround)
             {
                 Debug.DrawLine(transform.position + Vector3.up * (groundCheckRayDistance / 2), transform.position + Vector3.down * groundCheckRayDistance, Color.red);
             }
@@ -119,85 +172,6 @@ namespace BTB3D.Scripts.Game.Player
                 Debug.DrawLine(transform.position + Vector3.up * (groundCheckRayDistance / 2), transform.position + Vector3.down * groundCheckRayDistance);
             }
 #endif
-        }
-
-
-        public void RotateY(float direction)
-        {
-            _rotationY += direction * sensitiveX;
-            if (_isGround)
-            {
-                if (direction > 0 && (currentAnimationState != AnimationState.Falling || currentAnimationState != AnimationState.Landing) )
-                {
-                    SetAnimationState(AnimationState.TurnRight);
-                }
-                else
-                {
-                    SetAnimationState(AnimationState.TurnLeft);
-                }
-            }
-        }
-
-        public void RotateCameraX(float direction)
-        {
-            _rotationX -= direction * sensitiveY;
-            _rotationX = Mathf.Clamp(_rotationX, minRotationX, maxRotationX);
-        }
-
-        public void Move(Vector3 velocity)
-        {
-            _rigidbody.velocity = velocity;
-        }
-
-        public void MoveX(float direction)
-        {
-            _rigidbody.AddForce(transform.right * direction * walkSpeed * Time.deltaTime, ForceMode.VelocityChange);
-            if (_isGround)
-            {
-                if (direction > 0 && (currentAnimationState != AnimationState.Falling || currentAnimationState != AnimationState.Landing))
-                {
-                    SetAnimationState(AnimationState.WalkRight);
-                }
-                else
-                {
-                    SetAnimationState(AnimationState.WalkLeft);
-                }
-            }
-        }
-
-        public void MoveZ(float direction)
-        {
-            _rigidbody.AddForce(transform.forward * direction * walkSpeed * Time.deltaTime, ForceMode.VelocityChange);
-            if (_isGround)
-            {
-                if (direction > 0 && (currentAnimationState != AnimationState.Falling || currentAnimationState != AnimationState.Landing))
-                {
-                    SetAnimationState(AnimationState.WalkForward);
-                }
-                else
-                {
-                    SetAnimationState(AnimationState.WalkBackward);
-                }
-            }
-        }
-        public void SetRotationX(float value)
-        {
-            _rotationX = value;
-        }
-
-        public void SetRotationY(float value)
-        {
-            _rotationY = value;
-        }
-
-        public float GetRotationX()
-        {
-            return _rotationX;
-        }
-
-        public float GetRotationY()
-        {
-            return _rotationY;
         }
     }
 }

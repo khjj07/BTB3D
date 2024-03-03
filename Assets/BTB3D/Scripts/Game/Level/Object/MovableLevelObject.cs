@@ -14,6 +14,8 @@ using Color = UnityEngine.Color;
 using GizmosExtensionMethods;
 using UnityEngine.Rendering.VirtualTexturing;
 using System.Security.Cryptography;
+using BTB3D.Scripts.Game.Data;
+using BTB3D.Scripts.Game.Manager;
 using BTB3D.Scripts.Interface;
 using UnityEngine.UIElements;
 
@@ -79,8 +81,8 @@ namespace BTB3D.Scripts.Game.Level.Object
         {
 #if UNITY_EDITOR
             var children = from child in pointsOrigin.GetComponentsInChildren<Transform>()
-                         where child != pointsOrigin.transform
-                         select child;
+                           where child != pointsOrigin.transform
+                           select child;
             points = children.ToArray();
 #endif
         }
@@ -93,9 +95,28 @@ namespace BTB3D.Scripts.Game.Level.Object
             this.UpdateAsObservable().Where(_ => isMove)
                 .Subscribe(_ => instance.transform.position += _velocity * Time.deltaTime).AddTo(gameObject);
 
+            instance.GetComponentInChildren<MeshCollider>().OnCollisionEnterAsObservable().Subscribe(other =>
+            {
+                Debug.Log(other.contacts[0].normal);
+                if (other.collider.GetComponent<IDynamic>() != null && other.contacts[0].normal.y<=-0.7f)
+                {
+                    other.collider.transform.parent = instance.GetComponentInChildren<MeshCollider>().transform;
+                }
+            });
+
+            instance.GetComponentInChildren<MeshCollider>().OnCollisionExitAsObservable().Subscribe(other =>
+            {
+                if (other.collider.GetComponent<IDynamic>() != null)
+                {
+                    other.collider.transform.parent = GameManager.instance.worldOrigin;
+                }
+            });
+
             //points = pointsOrigin.GetComponentsInChildren<Transform>();
             instance.transform.position = points[0].position;
         }
+
+
 
         private void Move()
         {
@@ -197,22 +218,22 @@ namespace BTB3D.Scripts.Game.Level.Object
 
             asset.modelPrefab = modelPrefab;
 
-            List<Vector3Data> pointDataList = new List<Vector3Data>();
+            List<Vector3DataAsset> pointDataList = new List<Vector3DataAsset>();
             var points = from child in pointsOrigin.GetComponentsInChildren<Transform>()
                          where child != pointsOrigin.transform
                          select child;
 
             foreach (var point in points)
             {
-                var pointData = Vector3Data.Create(point.gameObject.name, point.position) as Vector3Data;
+                var pointData = Vector3DataAsset.Create(point.gameObject.name, point.position) as Vector3DataAsset;
                 pointDataList.Add(pointData);
                 AssetDatabase.AddObjectToAsset(pointData, parent);
             }
-            asset.AddData(parent, PointArrayData.Create("points", pointDataList.ToArray()));
-            asset.AddData(parent, FloatData.Create("moveSpeed", moveSpeed));
-            asset.AddData(parent, IntegerData.Create("playback", (int)playback));
-            asset.AddData(parent, BoolData.Create("isMove", isMove));
-            asset.AddData(parent, FloatData.Create("tolerance", tolerance));
+            asset.AddData(parent, PointArrayDataAsset.Create("points", pointDataList.ToArray()));
+            asset.AddData(parent, FloatDataAsset.Create("moveSpeed", moveSpeed));
+            asset.AddData(parent, IntegerDataAsset.Create("playback", (int)playback));
+            asset.AddData(parent, BoolDataAsset.Create("isMove", isMove));
+            asset.AddData(parent, FloatDataAsset.Create("tolerance", tolerance));
 
             return asset;
         }
@@ -236,7 +257,7 @@ namespace BTB3D.Scripts.Game.Level.Object
                 }
             }
 
-            Vector3Data[] pointDataArray = (Vector3Data[])asset.GetValue("points");
+            Vector3DataAsset[] pointDataArray = (Vector3DataAsset[])asset.GetValue("points");
 
             foreach (var pointData in pointDataArray)
             {
@@ -263,7 +284,7 @@ namespace BTB3D.Scripts.Game.Level.Object
 
         public virtual void React()
         {
-           isMove=!isMove;
+            isMove = !isMove;
         }
 
         public void OnDrawGizmos()

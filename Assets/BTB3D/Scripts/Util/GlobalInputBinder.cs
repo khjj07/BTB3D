@@ -1,5 +1,4 @@
 using System;
-using Assets.InfinitySword.Scripts.Pattern;
 using UniRx;
 using UniRx.Triggers;
 using UnityEngine;
@@ -15,11 +14,11 @@ namespace BTB3D.Scripts.Util
         }
         public static IObservable<float> CreateGetAxisStream(string axis)
         {
-            return instance.UpdateAsObservable().Select(_ => Input.GetAxis(axis));
+            return instance.FixedUpdateAsObservable().Select(_ => Input.GetAxis(axis));
         }
         public static IObservable<float> CreateGetAxisStreamOptimize(string axis)
         {
-            return instance.UpdateAsObservable().Select(_ => Input.GetAxis(axis)).Where(x=>x!=0);
+            return instance.FixedUpdateAsObservable().Select(_ => Input.GetAxis(axis)).Where(x=>x!=0);
         }
         public static IObservable<Unit> CreateGetKeyStream(KeyCode key)
         {

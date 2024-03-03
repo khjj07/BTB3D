@@ -1,8 +1,7 @@
-using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace Assets.InfinitySword.Scripts.Pattern
+namespace BTB3D.Scripts.Util
 {
     public class Singleton<T> : MonoBehaviour where T : MonoBehaviour
     {

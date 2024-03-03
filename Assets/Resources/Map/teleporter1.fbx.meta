@@ -1,14 +1,9 @@
 fileFormatVersion: 2
-guid: 409501f46f752cf45a95040c1feb8d8a
+guid: a21c3130066745541862523fcc104ac9
 ModelImporter:
   serializedVersion: 22200
   internalIDToNameTable: []
-  externalObjects:
-  - first:
-      type: UnityEngine:Material
-      assembly: UnityEngine.CoreModule
-      name: teleporter
-    second: {fileID: 2100000, guid: 82c7b71463ec80841b936ea297fe0913, type: 2}
+  externalObjects: {}
   materials:
     materialImportMode: 2
     materialName: 0

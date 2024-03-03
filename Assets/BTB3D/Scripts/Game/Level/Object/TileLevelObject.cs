@@ -125,10 +125,10 @@ namespace BTB3D.Scripts.Game.Level.Object
 
 
 
-            asset.AddData(parent, IntegerData.Create("row", row));
-            asset.AddData(parent, IntegerData.Create("column", column));
-            asset.AddData(parent, FloatData.Create("offset", offset));
-            asset.AddData(parent, Bool2DArrayData.Create("data", data.ToArray(), row, column));
+            asset.AddData(parent, IntegerDataAsset.Create("row", row));
+            asset.AddData(parent, IntegerDataAsset.Create("column", column));
+            asset.AddData(parent, FloatDataAsset.Create("offset", offset));
+            asset.AddData(parent, Bool2DArrayDataAsset.Create("data", data.ToArray(), row, column));
             return asset;
         }
 
@@ -144,7 +144,7 @@ namespace BTB3D.Scripts.Game.Level.Object
             row = (int)asset.GetValue("row");
             column = (int)asset.GetValue("column");
             offset = (float)asset.GetValue("offset");
-            Bool2DArrayData tmp = asset.GetData("data") as Bool2DArrayData;
+            Bool2DArrayDataAsset tmp = asset.GetData("data") as Bool2DArrayDataAsset;
             data.FromArray(tmp.GetDataToArray(),row,column);
 
             GenerateTile(modelPrefab);

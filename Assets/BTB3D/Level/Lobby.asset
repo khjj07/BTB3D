@@ -1,0 +1,128 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-9188623655059679747
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4acd4b759df7c1d4e9923247b55cf197, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  name: row
+  value: 7
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 172bfc185197a9f4ea84fb5d65495946, type: 3}
+  m_Name: Lobby
+  m_EditorClassIdentifier: 
+  spawnPoint:
+    name: SpawnPoint
+    position: {x: 8.27, y: 1.04, z: -20.13}
+    eulerAngles: {x: -0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    data: []
+  destination:
+    name: 
+    position: {x: 0, y: 0, z: 0}
+    eulerAngles: {x: 0, y: 0, z: 0}
+    scale: {x: 0, y: 0, z: 0}
+    data: []
+  objects:
+  - name: TileLevelObject
+    position: {x: 0, y: 0, z: 0}
+    eulerAngles: {x: -0, y: 0, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    data:
+    - {fileID: -9188623655059679747}
+    - {fileID: 5675311006211152319}
+    - {fileID: 138667159719450225}
+    - {fileID: 2524636151468984387}
+    prefab: {fileID: -63749916342713637, guid: b840dd75fa2cbb440bb8cea048c6e53e, type: 3}
+    modelPrefab: {fileID: 919132149155446097, guid: 7b30b4a9f0699144a9582eb984565f12,
+      type: 3}
+  - name: LevelTeleporter
+    position: {x: 8.34, y: 0.56, z: -7.21}
+    eulerAngles: {x: 0, y: 180.19308, z: 0}
+    scale: {x: 1, y: 1, z: 1}
+    data:
+    - {fileID: 7043729842458469604}
+    prefab: {fileID: -4828883544343591747, guid: 09a0c3b9cfae27d4ba1933238a8753e0,
+      type: 3}
+    modelPrefab: {fileID: 919132149155446097, guid: 60a1c2731c6ec1f49937bf45f9cefe18,
+      type: 3}
+--- !u!114 &138667159719450225
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b7ed3299e61fd242a0431b108874a47, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  name: offset
+  value: 4
+--- !u!114 &2524636151468984387
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bdb76a8ddc7c86e4384873378e483e79, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  name: data
+  value:
+  - data: 0101010101
+  - data: 0101010101
+  - data: 0101010101
+  - data: 0101010101
+  - data: 0101010101
+  - data: 0101010101
+  - data: 0101010101
+  row: 7
+  column: 5
+--- !u!114 &5675311006211152319
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4acd4b759df7c1d4e9923247b55cf197, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  name: column
+  value: 5
+--- !u!114 &7043729842458469604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 888b3c5f326cbec4888793453940a744, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  name: level
+  value: {fileID: 11400000, guid: d908c5b9031c7bf46ac255af7074ff42, type: 2}
