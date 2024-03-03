@@ -22,11 +22,13 @@ namespace BTB3D.Scripts.Game.Player
         private List<float> _moveZList= new List<float>();
         private List<float> _rotationXList= new List<float>();
         private List<float> _rotationYList= new List<float>();
-        
+        private IDisposable recordStream;
+
+
         public void RecordStart(Player target)
         {
             isRecord = true;
-            this.FixedUpdateAsObservable().TakeWhile(_ => isRecord).Subscribe(_ =>
+            recordStream=this.FixedUpdateAsObservable().Subscribe(_ =>
             {
                 _actions.Add((target.GetAction()));
                 _moveXList.Add(target.moveDirectionX);
@@ -38,16 +40,24 @@ namespace BTB3D.Scripts.Game.Player
 
         public void ResetRecorder()
         {
+
             _actions.Clear();
             _moveXList.Clear();
             _moveZList.Clear();
             _rotationXList.Clear();
             _rotationYList.Clear();
+            
+            _actions =new List<Player.Action>();
+            _moveXList = new List<float>();
+            _moveZList = new List<float>();
+            _rotationXList = new List<float>();
+            _rotationYList = new List<float>();
         }
 
         public void RecordStop()
         {
             isRecord = false;
+            recordStream.Dispose();
         }
 
         public PlayerClone SaveClone()

@@ -87,6 +87,7 @@ namespace BTB3D.Scripts.Game.Player
         {
             moveDirectionX = direction;
             _rigidbody.AddForce(transform.right * direction * walkSpeed * Time.fixedDeltaTime, ForceMode.VelocityChange);
+            //transform.Translate(transform.right * direction * walkSpeed * Time.fixedDeltaTime, Space.World);
             if (isGround)
             {
                 if (direction > 0 && (currentAction != Action.Falling || currentAction != Action.Landing))
@@ -104,6 +105,7 @@ namespace BTB3D.Scripts.Game.Player
         {
             moveDirectionZ = direction;
             _rigidbody.AddForce(transform.forward * direction * walkSpeed * Time.fixedDeltaTime, ForceMode.VelocityChange);
+            //transform.Translate(transform.forward * direction * walkSpeed * Time.fixedDeltaTime, Space.World);
             if (isGround)
             {
                 if (direction > 0 && (currentAction != Action.Falling || currentAction != Action.Landing))

@@ -31,7 +31,7 @@ namespace BTB3D.Scripts.Game.Player
                 _player.SetAction(actions[index]);
                 Debug.Log(moveDirectionZArray[index]);
                 index++;
-            });
+            }).AddTo(gameObject);
         }
     }
 }
